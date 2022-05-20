@@ -1,0 +1,45 @@
+{
+  "name": "vite-plugin-progress",
+  "version": "0.0.1",
+  "description": "A progress bar plugin for Vite.",
+  "main": "dist/index.js",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev": "pnpm run build -- --watch --ignore-watch examples",
+    "build": "tsup src/index.ts --dts --format cjs,esm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeddygong/vite-plugin-progress.git"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "progress"
+  ],
+  "author": "jeddygong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeddygong/vite-plugin-progress/issues"
+  },
+  "homepage": "https://github.com/jeddygong/vite-plugin-progress#readme",
+  "peerDependencies": {
+    "vite": ">2.0.0-0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.34",
+    "@types/progress": "^2.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.25.0",
+    "@typescript-eslint/parser": "^5.25.0",
+    "eslint": "^8.15.0",
+    "esno": "^0.16.3",
+    "tsup": "^5.12.8",
+    "typescript": "^4.6.4",
+    "vite": "*"
+  },
+  "dependencies": {
+    "picocolors": "^1.0.0",
+    "progress": "^2.0.3",
+    "rd": "^2.0.1"
+  }
+}

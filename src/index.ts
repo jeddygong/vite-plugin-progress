@@ -14,19 +14,12 @@ export default function viteProgressBar(): PluginOption {
     };
 
     const cacheProgress = getCacheCode();
-    console.log(cacheProgress, 'obj');
 
     const options: ProgressBar.ProgressBarOptions = {
-        // curr: , // 当前完成的索引
-        total: cacheProgress?.total || 100, // 要完成的总刻度数
-        width: 40, // 进度条的显示宽度默认为总
-        // stream: , // 默认为 stderr 的输出流
-        // head: , // 头字符默认为完整字符
-        complete: '\u2588', // 完成默认字符
-        incomplete: '\u2591', // 未完成的字符
-        renderThrottle: 16 // 更新之间的最短时间（以毫秒为单位）默认为 16
-        // clear: true // 完成时清除栏的选项默认为 false
-        // callback: // 进度条完成时调用的可选函数
+        total: cacheProgress?.total || 100,
+        width: 40,
+        complete: '\u2588',
+        incomplete: '\u2591',
     };
 
     const bar = new progress(
@@ -50,6 +43,8 @@ export default function viteProgressBar(): PluginOption {
         },
 
         buildStart() {
+            process.stderr.write('\n');
+
             const readDir = rd.readSync('./src');
 
             readDir.forEach((item) => {
@@ -79,20 +74,19 @@ export default function viteProgressBar(): PluginOption {
             return code;
         },
 
-        // 在服务器关闭时被调用
         buildEnd() {
             bar.update(1);
             bar.terminate();
-            console.log('\n构建结束', 'buildEnd');
 
-            // 缓存数据
+            // set cache
             setCacheCode(progressData);
 
         },
 
-        // 在服务器关闭时被调用
         closeBundle() {
-            console.log('\n服务关闭', 'closeBundle');
+            console.log(
+                `${colors.cyan(colors.bold('Build successful. Please see dist directory'))} \n`
+            );
         }
     };
 }

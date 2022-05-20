@@ -6,7 +6,12 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "pnpm run build -- --watch --ignore-watch examples",
-    "build": "tsup src/index.ts --dts --format cjs,esm"
+    "build": "tsup src/index.ts --dts --format cjs,esm",
+    "prepublishOnly": "pnpm run build",
+    "release": "npx bumpp --push --tag --commit && pnpm publish",
+    "example:react": "cd examples/vite-react && pnpm run build",
+    "example:vue2": "cd examples/vite-vue2 && pnpm run build",
+    "example:vue3": "cd examples/vite-vue3 && pnpm run build"
   },
   "repository": {
     "type": "git",
@@ -31,6 +36,7 @@
     "@types/progress": "^2.0.5",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
+    "bumpp": "^7.1.1",
     "eslint": "^8.15.0",
     "esno": "^0.16.3",
     "tsup": "^5.12.8",

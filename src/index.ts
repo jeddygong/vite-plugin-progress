@@ -2,10 +2,31 @@ import type { PluginOption } from 'vite';
 import colors from 'picocolors';
 import progress from 'progress';
 import rd from 'rd';
-import { getCacheCode, setCacheCode, ICacheProgress } from './cache';
+import { isExists, getCacheData, setCacheData, ICacheProgress } from './cache';
 
-export default function viteProgressBar(): PluginOption {
-    const progressData: ICacheProgress = {
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type Merge<M, N> = Omit<M, Extract<keyof M, keyof N>> & N;
+
+type PluginOptions = Merge<
+    ProgressBar.ProgressBarOptions,
+    {
+        /**
+         * total number of ticks to complete
+         * @default 100
+         */
+        total?: number;
+
+        /**
+         * The format of the progress bar
+         */
+        format?: string;
+    }
+>;
+
+export default function viteProgressBar(options?: PluginOptions): PluginOption {
+    const cacheProgress = getCacheData();
+
+    const progressData: ICacheProgress = cacheProgress || {
         transformed: 0,
         file: 0,
         lastPercent: 0,
@@ -13,63 +34,74 @@ export default function viteProgressBar(): PluginOption {
         total: 0
     };
 
-    const cacheProgress = getCacheCode();
+    let { transformed, file, lastPercent, percent, total } = progressData;
 
-    const options: ProgressBar.ProgressBarOptions = {
-        total: cacheProgress?.total || 100,
-        width: 40,
-        complete: '\u2588',
-        incomplete: '\u2591',
-    };
-
-    const bar = new progress(
-        `${colors.green(colors.bold('Bouilding'))} ${colors.cyan(
-            '[:bar]'
-        )} :percent | ${colors.magenta(
-            colors.bold('Transforming:')
-        )} :current/:total |  ${colors.blue(colors.bold('Time:'))} :elapseds`,
-        options
-    );
+    let bar: progress;
+    const stream = options?.stream || process.stderr;
+    let outDir: string;
 
     return {
-        name: 'vite-plugin-progress-bar',
+        name: 'vite-plugin-progress',
 
         enforce: 'pre',
 
         apply: 'build',
 
         config(config, { command }) {
-            if (command === 'build') config.logLevel = 'silent';
+            if (command === 'build') {
+                config.logLevel = 'silent';
+                outDir = config.build?.outDir || 'dist';
+
+                options = {
+                    width: 40,
+                    complete: '\u2588',
+                    incomplete: '\u2591',
+                    ...options
+                };
+                options.total = options?.total || total || 100;
+
+                const transforming = isExists
+                    ? `${colors.magenta(colors.bold('Transforming:'))} :current/:total | `
+                    : '';
+                const barText = `${colors.cyan(
+                    `${colors.bold('[')}:bar${colors.bold(']')}`
+                )}`
+
+                const barFormat =
+                    options.format ||
+                    `${colors.green(colors.bold('Bouilding'))} ${barText} :percent | ${transforming}${colors.blue(colors.bold('Time:'))} :elapseds`;
+
+                delete options.format;
+                bar = new progress(barFormat, options as ProgressBar.ProgressBarOptions);
+            }
         },
 
         buildStart() {
-            process.stderr.write('\n');
+            stream.write('\n');
+            // initialize
+            transformed = file = lastPercent = percent = total = 0;
 
-            const readDir = rd.readSync('./src');
-
-            readDir.forEach((item) => {
-                if (item.match(/\.(vue|ts|js|jsx|tsx)$/gi)?.length) {
-                    progressData.file += 1;
-                }
-            });
+            // Loop files in src directory
+            const readDir = rd.readSync('src');
+            const reg = /\.(vue|ts|js|jsx|tsx|css|scss||sass|styl|less)$/gi;
+            readDir.forEach((item) => reg.test(item) && (file += 1));
         },
 
         transform(code, id) {
-            if (!id.match(/node_modules/gi)?.length && progressData.percent < 0.5) {
+            const reg = /node_modules/gi;
 
-                progressData.transformed += 1;
-                progressData.percent = +(progressData.transformed / progressData.file).toFixed(2);
-           
-                if (progressData.percent < 0.8) progressData.lastPercent = progressData.percent;
-               
+            if (!reg.test(id) && percent < 0.5) {
+                transformed += 1;
+                percent = +(transformed / file).toFixed(2);
+                percent < 0.8 && (lastPercent = percent);
             }
 
-            if (progressData.percent >= 0.5 && progressData.lastPercent <= 0.95) {
-                progressData.lastPercent += 0.01;
-                bar.update(progressData.lastPercent);
+            if (percent >= 0.5 && lastPercent <= 0.95) {
+                lastPercent = +(lastPercent + 0.01).toFixed(2);
+                bar.update(lastPercent);
             }
 
-            progressData.total += 1;
+            total += 1;
 
             return code;
         },
@@ -78,15 +110,22 @@ export default function viteProgressBar(): PluginOption {
             bar.update(1);
             bar.terminate();
 
-            // set cache
-            setCacheCode(progressData);
-
+            // set cache data
+            setCacheData({
+                transformed,
+                file,
+                lastPercent,
+                percent,
+                total
+            });
         },
 
         closeBundle() {
-            console.log(
-                `${colors.cyan(colors.bold('Build successful. Please see dist directory'))} \n`
+            stream.write(
+                `${colors.cyan(colors.bold(`Build successful. Please see ${outDir} directory`))}`
             );
+            stream.write('\n');
+            stream.write('\n');
         }
     };
 }

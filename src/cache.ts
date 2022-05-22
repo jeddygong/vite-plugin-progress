@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const dirPath = path.join(__dirname, './../node_modules/.progress');
+const dirPath = path.join(process.cwd(), 'node_modules', '.progress');
 const filePath = path.join(dirPath, 'index.json');
 
 export interface ICacheProgress {
@@ -31,15 +31,15 @@ export interface ICacheProgress {
     lastPercent: number;
 }
 
-export const isExists = fs.existsSync(dirPath);
+export const isExists = fs.existsSync(filePath);
 
-export const getCacheCode = (): ICacheProgress | null => {
+export const getCacheData = (): ICacheProgress | null => {
     if (!isExists) return null;
 
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
 
-export const setCacheCode = (code: ICacheProgress) => {
+export const setCacheData = (data: ICacheProgress) => {
     !isExists && fs.mkdirSync(dirPath);
-    fs.writeFileSync(filePath, JSON.stringify(code));
+    fs.writeFileSync(filePath, JSON.stringify(data));
 };

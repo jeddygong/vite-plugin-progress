@@ -28,6 +28,9 @@ export default {
 }
 ```
 
+> Tip: During the first build, `transforms` and `chunks` are not displayed.
+
+
 ## Options
 Accepts almost all of the same options as [node-progress](https://github.com/tj/node-progress#options).
 
@@ -63,7 +66,7 @@ import progress from 'vite-plugin-progress'
 export default {
   plugins: [
     progress({
-        format: 'building [:bar] :percent'
+        format: 'building [:bar] :percent',
         total: 200,
         width: 60,
         complete: '=',

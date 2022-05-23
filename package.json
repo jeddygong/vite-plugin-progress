@@ -3,8 +3,8 @@
   "version": "0.0.1-beta.2",
   "description": "A progress bar plugin for Vite.",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "dev": "pnpm run build -- --watch --ignore-watch examples",
     "build": "tsup src/index.ts --dts --format cjs,esm",
     "prepublishOnly": "pnpm run build",

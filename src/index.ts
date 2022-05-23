@@ -103,7 +103,10 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
 
             total += 1;
 
-            return code;
+            return {
+                code,
+                map: null
+            };
         },
 
         buildEnd() {

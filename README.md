@@ -1,6 +1,8 @@
 # vite-plugin-progress
 Display with progress bar when building
-
+<p align="center">
+  <img src="demo.gif" width="100%" alt="Logo"/>
+</p>
 
 ## 📦 Install
 ```

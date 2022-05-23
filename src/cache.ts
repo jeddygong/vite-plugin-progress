@@ -4,42 +4,42 @@ import path from 'path';
 const dirPath = path.join(process.cwd(), 'node_modules', '.progress');
 const filePath = path.join(dirPath, 'index.json');
 
-export interface ICacheProgress {
+export interface ICacheData {
     /**
-     * transforming 的 modules
+     * Transform all count
      */
-    total: number;
+    cacheTransformCount: number;
 
     /**
-     * 文件总数量
+     * chunk all count
      */
-    file: number;
-
-    /**
-     * 已经转换的文件数
-     */
-    transformed: number;
-
-    /**
-     * 更新的百分比
-     */
-    percent: number;
-
-    /**
-     * 记录上一次的更新百分比
-     */
-    lastPercent: number;
+    cacheChunkCount: number
 }
 
-export const isExists = fs.existsSync(filePath);
+/**
+ * It has been cached
+ * @return boolean
+ */
+export const isExists = fs.existsSync(filePath) || false;
 
-export const getCacheData = (): ICacheProgress | null => {
-    if (!isExists) return null;
+/**
+ * Get cached data
+ * @returns ICacheData
+ */
+export const getCacheData = (): ICacheData => {
+    if (!isExists) return {
+        cacheTransformCount: 0,
+        cacheChunkCount: 0
+    };
 
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
 
-export const setCacheData = (data: ICacheProgress) => {
+/**
+ * Set the data to be cached
+ * @returns 
+ */
+export const setCacheData = (data: ICacheData) => {
     !isExists && fs.mkdirSync(dirPath);
     fs.writeFileSync(filePath, JSON.stringify(data));
 };

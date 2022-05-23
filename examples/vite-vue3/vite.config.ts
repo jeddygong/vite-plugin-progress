@@ -10,7 +10,13 @@ export default defineConfig({
             '@': path.resolve(__dirname, 'src')
         }
     },
-    plugins: [vue(), progress()],
+    plugins: [vue(), progress({
+        format: 'building [:bar] :percent',
+        total: 200,
+        width: 60,
+        complete: '=',
+        incomplete: '',
+    })],
     server: {
         port: 8080,
         hmr: {

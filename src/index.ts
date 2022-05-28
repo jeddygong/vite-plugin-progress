@@ -68,8 +68,6 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
                 delete options.format;
                 bar = new progress(barFormat, options as ProgressBar.ProgressBarOptions);
 
-
-
                 // not cache: Loop files in src directory
                 if (!isExists) {
                     const readDir = rd.readSync('src');
@@ -90,7 +88,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
                     transformed++
                     percent = +(transformed / (fileCount * 2)).toFixed(2)
                     percent < 0.8 && (lastPercent = percent)
-                  }
+                }
           
                 if (percent >= 0.25 && lastPercent <= 0.65) {
                     lastPercent = +(lastPercent + 0.001).toFixed(4)

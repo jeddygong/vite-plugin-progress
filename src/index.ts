@@ -63,7 +63,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
 
                 const barFormat =
                     options.format ||
-                    `${colors.green('Bouilding')} ${barText} :percent | ${transforming}${chunks}Time: :elapseds`
+                    `${colors.green('Building')} ${barText} :percent | ${transforming}${chunks}Time: :elapseds`
 
                 delete options.format;
                 bar = new progress(barFormat, options as ProgressBar.ProgressBarOptions);

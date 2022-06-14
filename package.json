@@ -12,6 +12,11 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "engines": {
+    "node": ">=14",
+    "pnpm": ">=7.0.0"
+  },
+  "packageManager": "pnpm@7.0.0",
   "scripts": {
     "dev": "pnpm run build -- --watch --ignore-watch examples",
     "build": "tsup src/index.ts --dts --format cjs,esm",

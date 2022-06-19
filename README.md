@@ -1,5 +1,12 @@
 # vite-plugin-progress
 Display with progress bar when building
+
+[![NPM version](https://img.shields.io/npm/v/vite-plugin-progress.svg)](https://npmjs.org/package/vite-plugin-progress)
+[![NPM version](https://badgen.net/npm/dt/vite-plugin-progress)](https://www.npmjs.com/package/vite-plugin-progress)
+[![NPM Downloads](https://img.shields.io/github/license/jeddygong/vite-plugin-progress)](https://npmjs.org/package/vite-plugin-progress)
+[![awesome-vite](https://awesome.re/badge.svg)](https://github.com/vitejs/awesome-vite)
+
+**English | [简体中文](https://github.com/jeddygong/vite-plugin-progress/blob/main/README.zh-CN.md)**
 <p align="center">
   <img src="demo.gif" width="100%" alt="Logo"/>
 </p>

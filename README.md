@@ -50,6 +50,7 @@ Accepts almost all of the same options as [node-progress](https://github.com/tj/
 - `callback` optional function to call when the progress bar completes
 - `stream` the output stream defaulting to stderr
 - `head` head character defaulting to complete character
+- `srcDir` the directory of the assets being built defaulting to "src"
 
 The `format` option accepts the following tokens:
 

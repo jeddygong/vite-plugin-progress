@@ -43,6 +43,7 @@
 -   `callback` ：完成后执行的回调函数；
 -   `stream` 终端中的输出格式流，默认 `stderr` ；
 -   `head` ：进度条的头字符；
+-   `srcDir`
 
 4.  参数 options 中的 `format` 中各个标记含义：
 

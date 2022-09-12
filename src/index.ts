@@ -20,6 +20,11 @@ type PluginOptions = Merge<
          * The format of the progress bar
          */
         format?: string;
+
+        /**
+         * The src directory of the build files
+         */
+        srcDir?: string;
     }
 >;
 
@@ -70,7 +75,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
 
                 // not cache: Loop files in src directory
                 if (!isExists) {
-                    const readDir = rd.readSync('src');
+                    const readDir = rd.readSync(options.srcDir || 'src');
                     const reg = /\.(vue|ts|js|jsx|tsx|css|scss||sass|styl|less)$/gi;
                     readDir.forEach((item) => reg.test(item) && fileCount++);
                 }

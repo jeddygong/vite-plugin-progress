@@ -4,29 +4,68 @@ import progress from 'progress';
 import rd from 'rd';
 import { isExists, getCacheData, setCacheData } from './cache';
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-type Merge<M, N> = Omit<M, Extract<keyof M, keyof N>> & N;
+interface PluginOptions {
+    /**
+     * total number of ticks to complete
+     * @default 100
+     */
+    total?: number;
+    /**
+     * The format of the progress bar
+     */
+    format?: string;
 
-type PluginOptions = Merge<
-    ProgressBar.ProgressBarOptions,
-    {
-        /**
-         * total number of ticks to complete
-         * @default 100
-         */
-        total?: number;
+    /**
+     * The src directory of the build files
+     */
+    srcDir?: string;
 
-        /**
-         * The format of the progress bar
-         */
-        format?: string;
+    /**
+     * current completed index
+     */
+    curr?: number | undefined;
 
-        /**
-         * The src directory of the build files
-         */
-        srcDir?: string;
-    }
->;
+    /**
+     * head character defaulting to complete character
+     */
+    head?: string | undefined;
+
+    /**
+     * The displayed width of the progress bar defaulting to total.
+     */
+    width?: number | undefined;
+
+    /**
+     * minimum time between updates in milliseconds defaulting to 16
+     */
+    renderThrottle?: number | undefined;
+
+    /**
+     * The output stream defaulting to stderr.
+     */
+    stream?: NodeJS.WritableStream | undefined;
+
+    /**
+     * Completion character defaulting to "=".
+     */
+    complete?: string | undefined;
+
+    /**
+     * Incomplete character defaulting to "-".
+     */
+    incomplete?: string | undefined;
+
+    /**
+     * Option to clear the bar on completion defaulting to false.
+     */
+    clear?: boolean | undefined;
+
+    /**
+     * Optional function to call when the progress bar completes.
+     */
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    callback?: Function | undefined;
+}
 
 export default function viteProgressBar(options?: PluginOptions): PluginOption {
 
@@ -132,6 +171,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
             return null
         },
 
+        // build completed
         closeBundle() {
             // close progress
             bar.update(1)
@@ -169,6 +209,6 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
         }
 
         transformed++
-        percent = lastPercent = +(transformed / (cacheTransformCount + cacheChunkCount)).toFixed(2)
+        percent = lastPercent = +(transformed / (cacheTransformCount + cacheChunkCount)).toFixed(4)
     }
 }

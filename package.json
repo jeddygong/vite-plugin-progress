@@ -18,7 +18,7 @@
   },
   "packageManager": "pnpm@7.0.0",
   "scripts": {
-    "dev": "pnpm run build -- --watch --ignore-watch examples",
+    "dev": "pnpm run build --watch --ignore-watch examples",
     "build": "tsup src/index.ts --dts --format cjs,esm",
     "prepublishOnly": "pnpm run build",
     "release": "npx bumpp --push --tag --commit && pnpm publish",

@@ -80,6 +80,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
     let fileCount = 0
     let lastPercent = 0
     let percent = 0
+    let errInfo;
 
     return {
         name: 'vite-plugin-progress',
@@ -123,9 +124,9 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
 
         transform(code, id) {
             transformCount++
-            
+
             // not cache
-            if(!isExists) {
+            if (!isExists) {
                 const reg = /node_modules/gi;
 
                 if (!reg.test(id) && percent < 0.25) {
@@ -133,15 +134,15 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
                     percent = +(transformed / (fileCount * 2)).toFixed(2)
                     percent < 0.8 && (lastPercent = percent)
                 }
-          
+
                 if (percent >= 0.25 && lastPercent <= 0.65) {
                     lastPercent = +(lastPercent + 0.001).toFixed(4)
-                } 
+                }
             }
 
             // go cache
             if (isExists) runCachedData()
-            
+
             bar.update(lastPercent, {
                 transformTotal: cacheTransformCount,
                 transformCur: transformCount,
@@ -158,7 +159,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
         renderChunk() {
             chunkCount++
 
-            if (lastPercent <= 0.95) 
+            if (lastPercent <= 0.95)
                 isExists ? runCachedData() : (lastPercent = +(lastPercent + 0.005).toFixed(4))
 
             bar.update(lastPercent, {
@@ -171,24 +172,40 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
             return null
         },
 
+        // catch error info
+        buildEnd(err) {
+            errInfo = err;
+        },
+
         // build completed
         closeBundle() {
-            // close progress
-            bar.update(1)
-            bar.terminate()
+            if (!errInfo) {
+                // close progress
+                bar.update(1)
+                bar.terminate()
 
-            // set cache data
-            setCacheData({
-                cacheTransformCount: transformCount,
-                cacheChunkCount: chunkCount,
-            })
+                // set cache data
+                setCacheData({
+                    cacheTransformCount: transformCount,
+                    cacheChunkCount: chunkCount,
+                })
 
-            // out successful message
-            stream.write(
-                `${colors.cyan(colors.bold(`Build successful. Please see ${outDir} directory`))}`
-            );
-            stream.write('\n');
-            stream.write('\n');
+                // out successful message
+                stream.write(
+                    `${colors.cyan(colors.bold(`Build successful. Please see ${outDir} directory`))}`
+                );
+                stream.write('\n');
+                stream.write('\n');
+            } else {
+                // out failed message
+                stream.write('\n');
+                stream.write(
+                    `${colors.red(colors.bold(`Build failed. Please check the error message`))}`
+                );
+                stream.write('\n');
+                stream.write('\n');
+            }
+
         }
     };
 
@@ -196,10 +213,10 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
      * run cache data of progress
      */
     function runCachedData() {
-        
+
         if (transformCount === 1) {
             stream.write('\n');
-            
+
             bar.tick({
                 transformTotal: cacheTransformCount,
                 transformCur: transformCount,

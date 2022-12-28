@@ -2,7 +2,7 @@ import type { PluginOption } from 'vite';
 import colors from 'picocolors';
 import progress from 'progress';
 import rd from 'rd';
-import { isExists, getCacheData, setCacheData } from './cache';
+import { isFileExists, getCacheData, setCacheData } from './cache';
 
 interface PluginOptions {
     /**
@@ -102,8 +102,8 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
                 };
                 options.total = options?.total || 100;
 
-                const transforming = isExists ? `${colors.magenta('Transforms:')} :transformCur/:transformTotal | ` : ''
-                const chunks = isExists ? `${colors.magenta('Chunks:')} :chunkCur/:chunkTotal | ` : ''
+                const transforming = isFileExists ? `${colors.magenta('Transforms:')} :transformCur/:transformTotal | ` : ''
+                const chunks = isFileExists ? `${colors.magenta('Chunks:')} :chunkCur/:chunkTotal | ` : ''
                 const barText = `${colors.cyan(`[:bar]`)}`
 
                 const barFormat =
@@ -114,7 +114,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
                 bar = new progress(barFormat, options as ProgressBar.ProgressBarOptions);
 
                 // not cache: Loop files in src directory
-                if (!isExists) {
+                if (!isFileExists) {
                     const readDir = rd.readSync(options.srcDir || 'src');
                     const reg = /\.(vue|ts|js|jsx|tsx|css|scss||sass|styl|less)$/gi;
                     readDir.forEach((item) => reg.test(item) && fileCount++);
@@ -126,7 +126,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
             transformCount++
 
             // not cache
-            if (!isExists) {
+            if (!isFileExists) {
                 const reg = /node_modules/gi;
 
                 if (!reg.test(id) && percent < 0.25) {
@@ -141,7 +141,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
             }
 
             // go cache
-            if (isExists) runCachedData()
+            if (isFileExists) runCachedData()
 
             bar.update(lastPercent, {
                 transformTotal: cacheTransformCount,
@@ -160,7 +160,7 @@ export default function viteProgressBar(options?: PluginOptions): PluginOption {
             chunkCount++
 
             if (lastPercent <= 0.95)
-                isExists ? runCachedData() : (lastPercent = +(lastPercent + 0.005).toFixed(4))
+                isFileExists ? runCachedData() : (lastPercent = +(lastPercent + 0.005).toFixed(4))
 
             bar.update(lastPercent, {
                 transformTotal: cacheTransformCount,

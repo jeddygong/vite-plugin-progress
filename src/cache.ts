@@ -20,14 +20,16 @@ export interface ICacheData {
  * It has been cached
  * @return boolean
  */
-export const isExists = fs.existsSync(filePath) || false;
+export const isFileExists = fs.existsSync(filePath) || false;
+
+export const isDirExists = fs.existsSync(dirPath) || false;
 
 /**
  * Get cached data
  * @returns ICacheData
  */
 export const getCacheData = (): ICacheData => {
-    if (!isExists) return {
+    if (!isFileExists) return {
         cacheTransformCount: 0,
         cacheChunkCount: 0
     };
@@ -40,6 +42,6 @@ export const getCacheData = (): ICacheData => {
  * @returns 
  */
 export const setCacheData = (data: ICacheData) => {
-    !isExists && fs.mkdirSync(dirPath);
+    !isDirExists && fs.mkdirSync(dirPath);
     fs.writeFileSync(filePath, JSON.stringify(data));
 };

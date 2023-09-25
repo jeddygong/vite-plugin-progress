@@ -13,6 +13,7 @@ Display with progress bar when building
 
 ## 📦 Install
 ```
+# npm
 npm i vite-plugin-progress -D 
 
 # yarn 
